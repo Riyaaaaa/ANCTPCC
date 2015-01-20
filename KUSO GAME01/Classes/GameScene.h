@@ -17,6 +17,8 @@ class player;
 class GameScene : public cocos2d::LayerColor
 {
 public:
+    player* getPlayer(){return hero;}
+    
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
     
@@ -33,7 +35,6 @@ public:
     void damage(){life--;};
     
     const std::vector<mapobject*>& getObjectAtline(line _l)const{return object_list[(int)_l];}
-    
     
     template<class CALLBACK>
     void setButton(cocos2d::Sprite* active,cocos2d::Sprite* selected,cocos2d::Vec2 pos,CALLBACK callBack); //first argument,main image. second argumet,selected image. last argument,callback function.

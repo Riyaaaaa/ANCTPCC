@@ -50,13 +50,22 @@ void mapobject::releace(){
 }
 
 mapobject* player::attack(){
-    rangeType  _rtype = myWeapon->reach();
     effect* obj= new effect(myWeapon->getEffectStr(),getLine());
-    obj->setReach(_rtype);
-    obj->setRemain(myWeapon->getValidFrame());
-    obj->setRange(myWeapon->getRange());
-    obj->setLine(getLine());
+    obj->Init(myWeapon);
+    
     return obj;
+}
+
+void effect::Init(weapon* myWeapon){
+    setReach(myWeapon->reach());
+    setRemain(myWeapon->getValidFrame());
+    setRange(myWeapon->getRange());
+    unitImage->setPosition(Vec2(Range*2,0));
+    setLine(getLine());
+    setFlag(myWeapon->getAnimeFlag());
+    
+    animeFrame = myWeapon->getFrame();
+    unitImage->runAction(cocos2d::Animate::create(myWeapon->getAnimation()));
 }
 
 enemy::enemy(std::string _filename,line _l) :mapobject(_filename){
@@ -73,7 +82,6 @@ void enemy::progress(GameScene* game){
 }
 
 effect::effect(std::string _filename,line _l) :mapobject(_filename){
-    unitImage->setPosition(Vec2(100,0));
     setLine(_l);
     
 }
@@ -82,14 +90,13 @@ void effect::setReach(rangeType _type){
     rtype = _type;
     switch (rtype) {
         case FRONTONLY:
-            remainFrame = 1;
+            movement=0;
             break;
         case ALL:
-            remainFrame = 1;
+            movement=0;
             break;
         default:
-            remainFrame = -1;
-            movement = 20;
+            movement = -50;
             break;
     }
 }
@@ -103,7 +110,12 @@ void effect::progress(GameScene* game){
             mapobject::moveTarget(movement);
             break;
         case ALL:
-            if(remainFrame==0)valid = false;
+            game->getPlayer()->getImage()->setTexture(cocos2d::TextureCache::getInstance()->addImage("front.png"));
+            if(remainFrame==0){
+                game->getPlayer()->getImage()->setTexture(cocos2d::TextureCache::getInstance()->addImage("right01.png"));
+
+                valid = false;
+            }
             break;
         default:
             break;
@@ -124,6 +136,10 @@ bool effect::isCollision(mapobject* target){
         return true;
     }
     else return false;
+}
+
+void effect::setFlag(bool _flag){
+    flag=_flag;
 }
 
 

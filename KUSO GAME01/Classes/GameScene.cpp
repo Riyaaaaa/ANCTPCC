@@ -30,7 +30,7 @@ bool GameScene::init()
         return false;
     }
     srand((unsigned int)time(NULL));
-    schedule(schedule_selector(GameScene::allProgress), 0.2f); //run allProgress every three seconds
+    schedule(schedule_selector(GameScene::allProgress), 0.1f); //run allProgress every three seconds
     
     GameData::getVisibleSize() = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -41,7 +41,7 @@ bool GameScene::init()
     
     hero = new player("right01.png");
     hero->setLine(CENTER);
-    hero->getImage()->setPosition(Vec2(50,GameData::getVisibleSize().height/2));
+    hero->getImage()->setPosition(Vec2(75,GameData::getVisibleSize().height/2));
     
     this->addChild(hero->getImage(),2);
     
@@ -128,7 +128,6 @@ void GameScene::downButtonCallBack(Ref* pSender){
 }
 
 void GameScene::attackButtonCallBack(Ref* pSender){
-    log("attacked");
     object_list[hero->getLine()].push_back(hero->attack());
     this->addChild(object_list[hero->getLine()].back()->getImage());
 }
@@ -161,10 +160,12 @@ void GameScene::allProgress(float frame){
     lines = rand()%3;
     
     if(rnd < 10){
-        auto new_enemy = new enemy("symptte.jpg",(line)lines);
+        std::string base="symptte";
+        base = base + "0" + std::to_string(rnd%4+1) + ".jpg";
+        auto new_enemy = new enemy(base,(line)lines);
         object_list[lines].push_back(new_enemy);
         this->addChild(new_enemy->getImage());
-        dynamic_cast<enemy*>(new_enemy)->setMovement(50);
+        dynamic_cast<enemy*>(new_enemy)->setMovement(25);
     }
     else;
     

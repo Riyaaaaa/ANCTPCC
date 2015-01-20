@@ -49,7 +49,7 @@ private:
 
 class player : public mapobject{
 public:
-    player(std::string _filename) :mapobject(_filename){myWeapon = blade::getInstance();}
+    player(std::string _filename) :mapobject(_filename){myWeapon = star::getInstance();}
     mapobject* attack(); //make the effect object
     
     //It is not necessary to use
@@ -81,16 +81,24 @@ public:
     void setMovement(int _move){movement = _move;}
     void setRemain(int _remain){remainFrame = _remain;} //will release the remaining time reaches 0
     void setRange(int _range){Range = _range;}
+    void setFlag(bool _flag);
+    
+    void Init(weapon*);
     
     int getMovement(){return movement;}
     
     bool isCollision(mapobject* target) override; //If that's true , to attack the target
+    bool haveAnimation(){return flag;};
+    
     void progress(GameScene*) override;
 private:
     rangeType rtype; //Kind of attack range
+    cocos2d::Vector<cocos2d::SpriteFrame*>* animeFrame;
+    
     int movement;
     int remainFrame;
     int Range;
+    bool flag=false;
 };
 
 #endif /* defined(__pcc01__unit__) */
