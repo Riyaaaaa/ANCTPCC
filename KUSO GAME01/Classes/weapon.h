@@ -22,9 +22,14 @@ class weapon{
     cocos2d::Sprite* attackEffect;
 protected:
     std::string effectStr;
+    int validFrame;
+    int Range;
 public:
-    virtual rangeType reach();
+    virtual rangeType reach()=0;
     std::string getEffectStr(){return effectStr;}; //return the file name of the effect image
+    int getValidFrame(){return validFrame;};
+    int getRange(){return Range;}
+    
     void setImage();
 };
 
@@ -32,6 +37,7 @@ class blade : public weapon{
 public:
     rangeType reach(){return FRONTONLY;};
     static weapon* getInstance(){static blade obj; return &obj;} //Singleton design pattern
+    
     
 private:
     blade();

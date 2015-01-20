@@ -10,5 +10,7 @@
 
 blade::blade(){
     effectStr = "blade.jpg";
+    validFrame = 4;
+    Range = 100;
 }
 

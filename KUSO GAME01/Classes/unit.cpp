@@ -10,29 +10,73 @@
 
 USING_NS_CC;
 
-object::object(std::string _filename){
+mapobject::mapobject(std::string _filename){
     unitImage = Sprite::create(_filename);
     size = unitImage->getContentSize();
 }
 
-void object::moveTarget(int x){
+mapobject::~mapobject(){
+    unitImage->removeFromParent();
+}
+
+void mapobject::moveTarget(int x){
     cocos2d::MoveTo* action = cocos2d::MoveTo::create(1.0f, unitImage->getPosition()+Vec2(-x,0));
     unitImage->runAction(action);
 }
 
-object* player::attack(){
+void mapobject::setLine(line _l){
+    belonging = _l;
+    unitImage->setPosition(Vec2(unitImage->getPosition().x,GameData::getLineWidth() * (int)_l + 100));
+    log("%d %d %lf¥n",GameData::getLineWidth(),_l,Vec2(unitImage->getPosition().x,GameData::getLineWidth() * (int)_l + 50).y);
+}
+void mapobject::moveLine(vec V){
+    switch (V) {
+        case UP:
+            if(belonging==CENTER)setLine(TOP);
+            else if(belonging==BOTTOM)setLine(CENTER);
+            break;
+        case DOWN:
+            if(belonging==CENTER)setLine(BOTTOM);
+            else if(belonging==TOP)setLine(CENTER);
+            break;
+        default:
+            throw;
+            break;
+    }
+}
+
+void mapobject::releace(){
+    unitImage->removeFromParent();
+}
+
+mapobject* player::attack(){
     rangeType  _rtype = myWeapon->reach();
-    effect* obj= new effect(myWeapon->getEffectStr());
+    effect* obj= new effect(myWeapon->getEffectStr(),getLine());
     obj->setReach(_rtype);
+    obj->setRemain(myWeapon->getValidFrame());
+    obj->setRange(myWeapon->getRange());
+    obj->setLine(getLine());
     return obj;
 }
 
-void enemy::progress(){
-    object::moveTarget(movement);
+enemy::enemy(std::string _filename,line _l) :mapobject(_filename){
+    unitImage->setPosition(Vec2(GameData::getVisibleSize().width,0));
+    setLine(_l);
 }
 
-effect::effect(std::string _filename) :object(_filename){}
+void enemy::progress(GameScene* game){
+    mapobject::moveTarget(movement);
+    if(unitImage->getPosition().x <= 0){
+        game->damage();
+        valid = false;
+    }
+}
 
+effect::effect(std::string _filename,line _l) :mapobject(_filename){
+    unitImage->setPosition(Vec2(100,0));
+    setLine(_l);
+    
+}
 
 void effect::setReach(rangeType _type){
     rtype = _type;
@@ -50,23 +94,36 @@ void effect::setReach(rangeType _type){
     }
 }
 
-void effect::progress(){
+void effect::progress(GameScene* game){
     switch (rtype) {
         case FRONTONLY:
+            if(remainFrame==0)valid = false;
             break;
         case LINE:
-            object::moveTarget(movement);
+            mapobject::moveTarget(movement);
             break;
         case ALL:
+            if(remainFrame==0)valid = false;
             break;
         default:
             break;
     }
+
+    for(mapobject* obj : game->getObjectAtline(getLine())){
+        if(isCollision(obj)){
+            obj->kill();
+        }
+    }
+
+    if(unitImage->getPosition().x > GameData::getVisibleSize().width)valid = false;
     remainFrame--;
 }
 
-bool effect::isCollision(object* target){
-    return true;
+bool effect::isCollision(mapobject* target){
+    if(target!=this && abs(unitImage->getPosition().x - target->getImage()->getPosition().x) < Range){
+        return true;
+    }
+    else return false;
 }
 
 

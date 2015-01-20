@@ -11,6 +11,9 @@
 
 #include "unit.h"
 
+class mapobject;
+class player;
+
 class GameScene : public cocos2d::LayerColor
 {
 public:
@@ -27,6 +30,10 @@ public:
     void downButtonCallBack(Ref* pSender);
     void attackButtonCallBack(Ref* pSender);
     
+    void damage(){life--;};
+    
+    const std::vector<mapobject*>& getObjectAtline(line _l)const{return object_list[(int)_l];}
+    
     
     template<class CALLBACK>
     void setButton(cocos2d::Sprite* active,cocos2d::Sprite* selected,cocos2d::Vec2 pos,CALLBACK callBack); //first argument,main image. second argumet,selected image. last argument,callback function.
@@ -38,9 +45,14 @@ private:
     cocos2d::Sprite* vectorButton[9]; //vectorButton image set.
     player *hero;
     
-    std::vector<object*> object_list; //run the progress() on all objects
+    std::vector< std::vector<mapobject*> > object_list; //run the progress() on all objects
     
     void allProgress(float); //object
+    
+    const int NUM_LINES = 3;
+    
+    int life = 5;
+    
 };
 
 #endif /* defined(__pcc01__GameScene__) */

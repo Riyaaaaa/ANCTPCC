@@ -29,19 +29,23 @@ bool GameScene::init()
     {
         return false;
     }
+    srand((unsigned int)time(NULL));
+    schedule(schedule_selector(GameScene::allProgress), 0.2f); //run allProgress every three seconds
     
-    schedule(schedule_selector(GameScene::allProgress), 3.0f); //run allProgress every three seconds
-    
-    Size visibleSize = Director::getInstance()->getVisibleSize();
+    GameData::getVisibleSize() = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    
+    GameData::getLineWidth() = (GameData::getVisibleSize().height - 100)/3;
     
     this->initWithColor(Color4B(255,255,255,255) ); //fill layer with white
     
     hero = new player("right01.png");
+    hero->setLine(CENTER);
+    hero->getImage()->setPosition(Vec2(50,GameData::getVisibleSize().height/2));
     
-    hero->getImage()->setPosition(Vec2(50,visibleSize.height/2));
-    this->addChild(hero->getImage());
+    this->addChild(hero->getImage(),2);
     
+    object_list.resize(NUM_LINES);
     
     //set button Image
     for (int y=0;y<3; y++) {
@@ -60,23 +64,23 @@ bool GameScene::init()
                                            "CloseSelected.png",
                                            CC_CALLBACK_1(GameScene::menuCloseCallback, this));
     
-    closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
+    closeItem->setPosition(Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2 ,
                                 origin.y + closeItem->getContentSize().height/2));
     
     
     //set move & attack button
     setButton(vectorButton[1], vectorButton[1],
-              Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2-100 ,
+              Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2-100 ,
                    origin.y + closeItem->getContentSize().height/2+350),
               CC_CALLBACK_1(GameScene::upButtonCallBack, this));
     
     setButton(vectorButton[4], vectorButton[4],
-              Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2-100 ,
+              Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2-100 ,
                    origin.y + closeItem->getContentSize().height/2+200),
               CC_CALLBACK_1(GameScene::attackButtonCallBack, this));
     
     setButton(vectorButton[7], vectorButton[7],
-              Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2-100 ,
+              Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2-100 ,
                    origin.y + closeItem->getContentSize().height/2+50),
               CC_CALLBACK_1(GameScene::downButtonCallBack, this));
     
@@ -84,7 +88,7 @@ bool GameScene::init()
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+    this->addChild(menu, 3);
     
     
     
@@ -96,7 +100,7 @@ void GameScene::setButton(Sprite* active,Sprite* selected,Vec2 pos,CALLBACK call
     auto pBtnItem = MenuItemSprite::create(active, selected, callBack);
     auto pMenu = Menu::create(pBtnItem, NULL);
     pMenu->setPosition(pos);
-    this->addChild(pMenu);
+    this->addChild(pMenu,3);
 }
 
 
@@ -116,21 +120,52 @@ void GameScene::menuCloseCallback(Ref* pSender)
 
 //define a callback group
 void GameScene::upButtonCallBack(Ref* pSender){
-    hero->getImage()->setPosition(hero->getImage()->getPosition() + Vec2(0,-20));
+    hero->moveLine(UP);
 }
 
 void GameScene::downButtonCallBack(Ref* pSender){
-    hero->getImage()->setPosition(hero->getImage()->getPosition() + Vec2(0,20));
+    hero->moveLine(DOWN);
 }
 
 void GameScene::attackButtonCallBack(Ref* pSender){
-    object_list.push_back(hero->attack());
-    this->addChild(object_list.back()->getImage());
+    log("attacked");
+    object_list[hero->getLine()].push_back(hero->attack());
+    this->addChild(object_list[hero->getLine()].back()->getImage());
 }
 //
 
 void GameScene::allProgress(float frame){
-    for(auto &obj: object_list){
-        obj->progress();
+    int rnd,lines;
+    
+    if(life<=0){
+        Director::getInstance()->end();
+        exit(0);
     }
+    
+    for(int i=0;i<NUM_LINES;i++){
+        for(auto &obj: object_list[i]){
+            obj->progress(this);
+        }
+        log("");
+        for(auto &obj: object_list[i]){
+            if(!obj->isValid()){
+                delete obj;
+                obj=nullptr;
+            }
+        }
+        auto it = remove_if( object_list[i].begin(), object_list[i].end(), [](mapobject* obj){return obj==nullptr;} );
+        object_list[i].erase(it,object_list[i].end());
+    }
+    
+    rnd = rand()%100;
+    lines = rand()%3;
+    
+    if(rnd < 10){
+        auto new_enemy = new enemy("symptte.jpg",(line)lines);
+        object_list[lines].push_back(new_enemy);
+        this->addChild(new_enemy->getImage());
+        dynamic_cast<enemy*>(new_enemy)->setMovement(50);
+    }
+    else;
+    
 }
