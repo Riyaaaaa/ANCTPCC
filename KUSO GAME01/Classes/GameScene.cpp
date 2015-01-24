@@ -1,8 +1,7 @@
 #include "GameScene.h"
+#include "EndGameScene.h"
 
 using namespace cocos2d;
-
-static GameScene* sharedScene = NULL;
 
 Scene* GameScene::createScene()
 {
@@ -32,7 +31,6 @@ bool GameScene::init()
     srand((unsigned int)time(NULL));
     schedule(schedule_selector(GameScene::allProgress), 0.1f); //run allProgress every three seconds
     
-    GameData::getVisibleSize() = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     
     GameData::getLineWidth() = (GameData::getVisibleSize().height - 100)/3;
@@ -48,15 +46,20 @@ bool GameScene::init()
     object_list.resize(NUM_LINES);
     
     //set button Image
-    for (int y=0;y<3; y++) {
-        for (int x=0;x<3; x++) {
-            Rect rect(float(x * 150),  // X座標
-                      float(y * 156), // Y座標
-                      float(150),      // 幅
-                      float(156));    // 高さ
-            vectorButton[i++] = Sprite::create("yazirusi.jpg", rect);
-        }
+    
+    for (int x=0;x<2; x++) {
+        Rect rect(float(x * 150),
+                  float(0),
+                  float(150),
+                  float(150));
+        weaponButton[0][x] = Sprite::create("swordIco.png",rect);
+        weaponButton[1][x] = Sprite::create("starIco.png",rect);
+        weaponButton[2][x] = Sprite::create("hellfire.png",rect);
+        mainButton[0][x] = Sprite::create("up.png",rect);
+        mainButton[1][x] = Sprite::create("attack.png",rect);
+        mainButton[2][x] = Sprite::create("down.png",rect);
     }
+
     
     //set power button
     auto closeItem = MenuItemImage::create(
@@ -69,21 +72,39 @@ bool GameScene::init()
     
     
     //set move & attack button
-    setButton(vectorButton[1], vectorButton[1],
+    setButton(mainButton[0][0], mainButton[0][1],
               Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2-100 ,
                    origin.y + closeItem->getContentSize().height/2+350),
               CC_CALLBACK_1(GameScene::upButtonCallBack, this));
     
-    setButton(vectorButton[4], vectorButton[4],
+    setButton(mainButton[1][0], mainButton[1][1],
               Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2-100 ,
                    origin.y + closeItem->getContentSize().height/2+200),
               CC_CALLBACK_1(GameScene::attackButtonCallBack, this));
     
-    setButton(vectorButton[7], vectorButton[7],
+    setButton(mainButton[2][0], mainButton[2][1],
               Vec2(origin.x + GameData::getVisibleSize().width - closeItem->getContentSize().width/2-100 ,
                    origin.y + closeItem->getContentSize().height/2+50),
               CC_CALLBACK_1(GameScene::downButtonCallBack, this));
     
+    setButton(weaponButton[0][0], weaponButton[0][1],
+              Vec2(GameData::getVisibleSize().width/2 - 250 , 100),
+              [&](Ref* _ref){hero->setWeapon(blade::getInstance());});
+    
+    setButton(weaponButton[1][0], weaponButton[1][1],
+              Vec2(GameData::getVisibleSize().width/2 , 100),
+              [&](Ref* _ref){hero->setWeapon(star::getInstance());});
+    
+    setButton(weaponButton[2][0], weaponButton[2][1],
+              Vec2(GameData::getVisibleSize().width/2 + 250 , 100),
+              [&](Ref* _ref){hero->setWeapon(fire::getInstance());});
+    
+
+    remainLife = Label::createWithSystemFont("LIFE = ♡♡♡♡♡♡♡♡♡♡", "arial", 48);
+    //remainLife->setPosition(Point(50, GameData::getVisibleSize().height-50));
+    remainLife->setPosition(GameData::getVisibleSize()/2 - Size(100,0));
+    remainLife->setColor(Color3B::BLACK);
+    this->addChild(remainLife);
     
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, NULL);
@@ -104,18 +125,12 @@ void GameScene::setButton(Sprite* active,Sprite* selected,Vec2 pos,CALLBACK call
 }
 
 
-void GameScene::menuCloseCallback(Ref* pSender)
+void GameScene::gameOverd()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
-    MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
-    return;
-#endif
-    
-    Director::getInstance()->end();
-    
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
-#endif
+    Scene* nextScene = EndGameScene::createScene();
+    if(nextScene){
+        Director::sharedDirector()->replaceScene(nextScene);
+    }
 }
 
 //define a callback group
@@ -137,7 +152,7 @@ void GameScene::allProgress(float frame){
     int rnd,lines;
     
     if(life<=0){
-        Director::getInstance()->end();
+        gameOverd();
         exit(0);
     }
     
@@ -156,7 +171,7 @@ void GameScene::allProgress(float frame){
         object_list[i].erase(it,object_list[i].end());
     }
     
-    rnd = rand()%100;
+    rnd = rand()%150;
     lines = rand()%3;
     
     if(rnd < 10){
@@ -167,6 +182,38 @@ void GameScene::allProgress(float frame){
         this->addChild(new_enemy->getImage());
         dynamic_cast<enemy*>(new_enemy)->setMovement(25);
     }
+    if(rnd < 5){
+        std::string base="hal";
+        base = base + "0" + std::to_string(rnd%3+1) + ".png";
+        auto new_enemy = new enemy(base,(line)lines);
+        object_list[lines].push_back(new_enemy);
+        this->addChild(new_enemy->getImage());
+        dynamic_cast<enemy*>(new_enemy)->setMovement(50);
+    }
     else;
     
+}
+
+void GameScene::damage(){
+    life--;
+    remainLife->setString("いたい");
+    
+    this->runAction(Sequence::create(DelayTime::create(0.5),CallFunc::create([this](){
+        std::string str = "LIFE = ";
+        for(int i=0;i<this->life;i++)str.append("♡");
+        this->remainLife->setString(str);
+    }), NULL));
+};
+void GameScene::menuCloseCallback(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+    MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
+    return;
+#endif
+    
+    Director::getInstance()->end();
+    
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    exit(0);
+#endif
 }

@@ -8,6 +8,9 @@
 
 #include "Structure.h"
 
- int GameData::linewidth=0;
-cocos2d::Size GameData::visibleSize=cocos2d::Size::ZERO;
+USING_NS_CC;
+
+int GameData::linewidth=0;
+int GameData::score=0;
+Size GameData::visibleSize=Size::ZERO;
 

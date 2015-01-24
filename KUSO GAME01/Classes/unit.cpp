@@ -19,17 +19,17 @@ mapobject::~mapobject(){
     unitImage->removeFromParent();
 }
 
-void mapobject::moveTarget(int x){
+void mapobject::moveTarget(int x){ //move x position
     cocos2d::MoveTo* action = cocos2d::MoveTo::create(1.0f, unitImage->getPosition()+Vec2(-x,0));
     unitImage->runAction(action);
 }
 
-void mapobject::setLine(line _l){
+void mapobject::setLine(line _l){ //set belonging to line
     belonging = _l;
     unitImage->setPosition(Vec2(unitImage->getPosition().x,GameData::getLineWidth() * (int)_l + 100));
     log("%d %d %lf¥n",GameData::getLineWidth(),_l,Vec2(unitImage->getPosition().x,GameData::getLineWidth() * (int)_l + 50).y);
 }
-void mapobject::moveLine(vec V){
+void mapobject::moveLine(vec V){ //move belongig to line
     switch (V) {
         case UP:
             if(belonging==CENTER)setLine(TOP);
@@ -49,18 +49,18 @@ void mapobject::releace(){
     unitImage->removeFromParent();
 }
 
-mapobject* player::attack(){
+mapobject* player::attack(){ //make effect object from weapon status
     effect* obj= new effect(myWeapon->getEffectStr(),getLine());
     obj->Init(myWeapon);
     
     return obj;
 }
 
-void effect::Init(weapon* myWeapon){
+void effect::Init(weapon* myWeapon){ //effect init
     setReach(myWeapon->reach());
     setRemain(myWeapon->getValidFrame());
     setRange(myWeapon->getRange());
-    unitImage->setPosition(Vec2(Range*2,0));
+    unitImage->setPosition(Vec2(unitImage->getContentSize().width,0));
     setLine(getLine());
     setFlag(myWeapon->getAnimeFlag());
     
@@ -96,18 +96,21 @@ void effect::setReach(rangeType _type){
             movement=0;
             break;
         default:
-            movement = -50;
+            movement = -50; //line type
             break;
     }
 }
 
 void effect::progress(GameScene* game){
+    std::vector<std::vector<mapobject*>*> targetIt;
     switch (rtype) {
         case FRONTONLY:
             if(remainFrame==0)valid = false;
+            targetIt.push_back(&game->getObjectAtline(getLine()));
             break;
         case LINE:
             mapobject::moveTarget(movement);
+            targetIt.push_back(&game->getObjectAtline(getLine()));
             break;
         case ALL:
             game->getPlayer()->getImage()->setTexture(cocos2d::TextureCache::getInstance()->addImage("front.png"));
@@ -116,14 +119,19 @@ void effect::progress(GameScene* game){
 
                 valid = false;
             }
+            targetIt.push_back(&game->getObjectAtline(BOTTOM));
+            targetIt.push_back(&game->getObjectAtline(CENTER));
+            targetIt.push_back(&game->getObjectAtline(TOP));
             break;
         default:
             break;
     }
 
-    for(mapobject* obj : game->getObjectAtline(getLine())){
-        if(isCollision(obj)){
-            obj->kill();
+    for(auto objectlist: targetIt){
+        for(auto it = objectlist->begin(); it < objectlist->end(); it++){
+            if(isCollision(*it)){
+                (*it)->kill();
+            }
         }
     }
 

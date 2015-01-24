@@ -9,6 +9,8 @@
 #ifndef __pcc01__Structure__
 #define __pcc01__Structure__
 
+#include "cocos2d.h"
+
 enum line{
     BOTTOM,
     CENTER,
@@ -24,11 +26,15 @@ enum vec{
 
 class GameData{
     static int linewidth;
+    static int score;
     static cocos2d::Size visibleSize;
     
 public:
     static int& getLineWidth(){return linewidth;}
     static cocos2d::Size& getVisibleSize(){return visibleSize;}
+    static void addScore(int _d=1){score+=_d;};
+    static int getScore(){return score;};
+    static void init(){score = 0;}
 };
 
 #endif /* defined(__pcc01__Structure__) */

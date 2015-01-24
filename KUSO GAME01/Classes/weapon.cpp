@@ -46,7 +46,7 @@ star::star(){
 fire::fire(){
     effectStr = "fire.png";
     validFrame = 4;
-    Range = 300;
+    Range = 1000;
     
     cocos2d::Rect rect(float(200),
                        float(0),

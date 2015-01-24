@@ -32,7 +32,7 @@ public:
     void moveLine(vec);
     
     bool isValid(){return valid;}
-    void kill(){valid = false;}
+    void kill(){valid = false; GameData::addScore();}
     void releace();
     
 protected:
@@ -49,12 +49,15 @@ private:
 
 class player : public mapobject{
 public:
-    player(std::string _filename) :mapobject(_filename){myWeapon = star::getInstance();}
+    player(std::string _filename) :mapobject(_filename){myWeapon = blade::getInstance();}
     mapobject* attack(); //make the effect object
     
     //It is not necessary to use
     bool isCollision(mapobject* target)override{return true;}
     void progress(GameScene*)override{};
+    
+    void setWeapon(weapon* _weapon){myWeapon = _weapon;};
+    
 private:
     weapon* myWeapon;
 };

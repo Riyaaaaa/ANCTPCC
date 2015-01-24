@@ -27,14 +27,15 @@ public:
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
+    void gameOverd();
     
     void upButtonCallBack(Ref* pSender);
     void downButtonCallBack(Ref* pSender);
     void attackButtonCallBack(Ref* pSender);
     
-    void damage(){life--;};
+    void damage();
     
-    const std::vector<mapobject*>& getObjectAtline(line _l)const{return object_list[(int)_l];}
+    std::vector<mapobject*>& getObjectAtline(line _l){return object_list[(int)_l];}
     
     template<class CALLBACK>
     void setButton(cocos2d::Sprite* active,cocos2d::Sprite* selected,cocos2d::Vec2 pos,CALLBACK callBack); //first argument,main image. second argumet,selected image. last argument,callback function.
@@ -44,6 +45,11 @@ public:
     
 private:
     cocos2d::Sprite* vectorButton[9]; //vectorButton image set.
+    cocos2d::Sprite* weaponButton[3][2];
+    cocos2d::Sprite* mainButton[3][2];
+
+    cocos2d::Label* remainLife;
+    
     player *hero;
     
     std::vector< std::vector<mapobject*> > object_list; //run the progress() on all objects
@@ -52,7 +58,7 @@ private:
     
     const int NUM_LINES = 3;
     
-    int life = 5;
+    int life = 10;
     
 };
 

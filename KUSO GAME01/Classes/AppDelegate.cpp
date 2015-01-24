@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "GameScene.h"
+#include "TitleScene.h"
 
 USING_NS_CC;
 
@@ -31,6 +32,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
 
+    GameData::init();
+    
     // turn on display FPS
     director->setDisplayStats(true);
 
@@ -38,7 +41,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    auto scene = GameScene::createScene();
+    auto scene = TitleScene::createScene();
 
     // run
     director->runWithScene(scene);
