@@ -1,0 +1,117 @@
+<html>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <head>
+        <title>TEST</title>
+    </head>
+    <body>
+        <!-- ここからがHTMLのページの本体 -->
+        <h1>見出し１</h1>
+        <h2>見出し２</h2>
+        <h3>見出し３</h3>
+        <hr size=5 color=#000000>
+
+        <!-- テーブル -->
+        <table border="1px">
+            <!-- 横 -->
+            <tr>
+                <!-- 要素 -->
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+            </tr>
+            <tr>
+                <!-- 要素 -->
+                <td>D</td>
+                <td>E</td>
+                <td>F</td>
+            </tr>
+        </table>
+
+
+        <ul>
+            <li>リスト1</li>
+            <li>リスト2</li>
+            <li>リスト3</li>
+        </ul>
+
+        <p>段落を記述する欄です。また、改行したいときは<br>brタグを使います。フォントの指定には<font face=Impact">fontタグを使います。</font></p>
+
+        <pre>
+スペースや改行を全て反映したい場合は
+　　　　このようにpreタグを使うことで
+　　　　　　　　　　　　可能です。
+        </pre>
+
+        <blockquote>
+        引用するときはblockquoteタグを使うと良いです。
+        　　　<div align="right">ーりやさん</div>
+        </blockquote>
+
+        <center>センタータグで簡易に中央揃えができますがお勧めしません。</center>
+
+        <p>文字に簡易に属性を付加する構文はたくさんあります。<b>太字</b>、<u>下線</u>、<i>斜体</i>、<s>打ち消し</s>、<big>大きく</big>、<small>小さく</small>、紹介しきれないので自分で調べてみましょう。</p>
+
+
+        <a href="framepage.html">リンクはa要素で指定出来ます。</a>
+        <br>
+        <img src="image.jpg" alt="画像はimg要素で指定できます。"></img>
+
+        <hr>
+        <p>フォームにはいろんなパーツがあります。</p>
+        <form>
+            <p>text:
+            <input type="text" name="name"><br>
+            </p>
+            <p>address:
+            <input type="address" name="name2"><br>
+            <textarea name="area" cols="60" rows="8"></textarea><br>
+            </p>
+            <p>
+            <input type="checkbox" name="check1" value="いえい" checked>いえい<br>
+            <input type="checkbox" name="check2" value="うぇい">うぇい<br>
+            <input type="checkbox" name="check3" value="そいや">そいや<br> 
+        </p>
+        <p>
+            <input type="radio" name="radio" value="すこ">すこ<br>
+            <input type="radio" name="radio" value="わりとすこ">わりとすこ<br>
+            <input type="radio" name="radio" value="あんまりすこ">あんまりすこ<br> 
+        </p>
+        <p>お使いのOS:
+        <select>
+            <option value="vine" selected>Vine Linux</option>
+            <option value="arch">Arch Linux</option>
+            <option value="gentoo">Gentoo Linux</option>
+            <option value="redhawk">RedHawk Linux</option>
+
+        </select>
+        </p>
+        <br>
+        <hr>
+
+
+             <input type="submit" name="name3" value="ポスト">
+            <input type="reset" name="reset" value="reset"><br>
+        </form>
+        
+        <div class="myclass">
+
+            <hr>
+
+            <h1 id="unique_class">見出し</h1>
+
+            <p>また、divやsectionというタグは複数のコンテンツを束ねる役割を持ちます。しかし、dicやsection自体に効果はありません。グループ化したコンテンツに対して何かしらの属性を付加することが目的です。</p>
+
+        </div>
+
+        <div class="my_box">
+            <pre>
+                .my_box{
+    border:1px solid lightcoral;
+    margin:100px;
+    background-color:#DDFFFF;
+}
+            </pre>
+    </div>
+    </body>
+</html>

@@ -1,0 +1,41 @@
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <title>TEST</title>
+    </head>
+    <script type="text/javascript">
+        function addList() {
+        	var text = document.createTextNode('商品');
+            console.log(text); 
+
+            var new_li = document.createElement('li');
+            new_li.appendChild(text);
+
+            document.getElementById('list').appendChild(new_li);      	
+        }
+
+function my_alert(){
+                alert('aaajegkenbrgn;ksn');
+        }
+
+        function handle(){
+            // var text = document.getElementById('list').childNodes;
+            document.getElementById('mybutton').onclick=my_alert;
+        }
+    </script>
+
+    <body>
+        <!-- <input type="button" value="購入する" onclick="addList();" > -->
+        <input type="button" id = "mybutton" value="ボタン" onclick="alert('aaaa');" >
+        <input type="button" value="あらーとの文字かえる" onclick="handle();" >
+
+        <h1>見出し</h1>
+     <ul id="list">           
+  <li>商品</li>            
+  <li>商品</li>           
+  <li>商品</li>       
+</ul>
+
+            </body>
+</html>
+

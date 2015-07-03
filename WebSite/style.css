@@ -1,0 +1,22 @@
+div.myclass{
+    color:RED;
+}
+
+div#unique_class{
+    font-size:30px;
+    text-decoration:underline;
+}
+
+blockquote{
+    background-color:#FFFFDD;
+}
+
+.my_box{
+    border:1px solid lightcoral;
+    margin:100px;
+    background-color:#DDFFFF;
+}
+
+
+
+

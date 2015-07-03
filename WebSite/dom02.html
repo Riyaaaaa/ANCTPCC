@@ -1,0 +1,32 @@
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <title>TEST</title>
+    </head>
+    <script type="text/javascript">
+        function handle(){
+            document.getElementById('box').style.width=100;
+        }
+        function handle2(){
+            document.getElementById('box').style.width=300
+        }
+        function addEvent(){
+            document.getElementById('container').addEventListener('mouseover',handle,false);
+            document.getElementById('container').addEventListener('mouseout',handle2,false);
+        }
+    </script>
+
+    <body>
+    <input type="button" value="実行する" onclick="addEvent();" >    
+    <h1>ボックス</h1>
+
+        <div id="box" style="border-style: double; width:300px; height:300px;"></div>     
+        <pre id="container" style="border-style: solid;" >
+
+                マウスを乗っけるとボックスの背景がかわるよ！
+
+        </pre>
+
+    </body>
+</html>
+
